@@ -28,7 +28,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 sh '''
-                    rm -rf react-app
+                    sudo rm -rf react-app
                     git clone ${GIT_REPO} react-app
                 '''
             }
