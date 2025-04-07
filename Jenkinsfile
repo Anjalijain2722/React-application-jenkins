@@ -9,7 +9,6 @@ pipeline {
     }
 
     stages {
-
         stage('Clean Docker') {
             steps {
                 sh '''
@@ -20,7 +19,7 @@ pipeline {
                     echo "Removing all Docker images..."
                     docker images -aq | xargs -r docker rmi -f
 
-                    echo "Evry thing cleared"
+                    echo "Everything cleared"
                 '''
             }
         }
@@ -34,11 +33,11 @@ pipeline {
             }
         }
 
-        stage('Build React App') {    //In this step putting the instalation of npm i in an container for simplicity
+        stage('Build React App') {
             steps {
-                 sh '''
-            docker run --rm -v $PWD/react-app:/usr/src/app -w /usr/src/app node:lts bash -c "npm install && npm run build"
-                    '''
+                sh '''
+                    docker run --rm -v $PWD/react-app:/usr/src/app -w /usr/src/app node:lts bash -c "npm install && npm run build"
+                '''
             }
         }
 
@@ -78,6 +77,24 @@ pipeline {
                     cp -r react-app/build/* artifacts/
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            emailext (
+                to: '200314arya@gmail.com',
+                subject: "SUCCESS: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: "Good news! The build for ${env.JOB_NAME} succeeded.\nCheck it at ${env.BUILD_URL}"
+            )
+        }
+
+        failure {
+            emailext (
+                to: '200314arya@gmail.com',
+                subject: "FAILURE: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: "Uh oh! The build for ${env.JOB_NAME} failed.\nCheck it at ${env.BUILD_URL}"
+            )
         }
     }
 }
