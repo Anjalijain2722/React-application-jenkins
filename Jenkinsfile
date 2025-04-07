@@ -34,13 +34,11 @@ pipeline {
             }
         }
 
-        stage('Build React App') {
+        stage('Build React App') {    //In this step putting the instalation of npm i in an container for simplicity
             steps {
-                sh '''
-                    cd react-app
-                    npm install
-                    npm run build
-                '''
+                 sh '''
+            docker run --rm -v $PWD/react-app:/usr/src/app -w /usr/src/app node:lts bash -c "npm install && npm run build"
+                    '''
             }
         }
 
